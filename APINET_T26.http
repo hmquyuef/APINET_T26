@@ -1,0 +1,6 @@
+@APINET_T26_HostAddress = http://localhost:5229
+
+GET {{APINET_T26_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
