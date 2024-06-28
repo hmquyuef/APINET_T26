@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace APINET_T26.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v{version:apiVersion}/weather")]
+    [ApiVersion("2.0")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]

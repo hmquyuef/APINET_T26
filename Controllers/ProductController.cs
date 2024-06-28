@@ -6,22 +6,38 @@ using Microsoft.AspNetCore.Mvc;
 namespace APINET_T26.Controllers
 {
     //[Route("api/[controller]")] //api/Product
-    [Route("api/products")] //api/products
+    [Route("api/v{version:apiVersion}/products")] //api/v1/products
     [ApiController]
+    [ApiVersion("1.0")]
+    [Tags("Product - Sản phẩm phiên bản 1.0")]
     public class ProductController : ControllerBase
     {
+        #region Constructor
         private readonly APINETT26DbContext _context;
         public ProductController(APINETT26DbContext context)
         {
             _context = context;
         }
+        #endregion
 
         #region GET: api/products
+        /// <summary>
+        /// Lấy danh sách sản phẩm. Roles: Admin, User
+        /// </summary>
+        /// <remarks>
+        /// Sử dụng Api với các tham số: IsActive, Filter, ...
+        /// </remarks>
+        /// <param name="filter"></param>
+        /// <response code="200">Trả về danh sách sản phẩm</response>
+        /// <response code="400">Thiếu thông tin</response>
+        /// <response code="404">Không tim thấy thông tin</response>
+        /// <response code="500">Lỗi hệ thống</response>
         [HttpGet]
         public IActionResult GetProductList(string filter = "")
         {
             try
             {
+                //mô tả
                 var items = _context.Products
                     .Where(x => x.Filter.ToLower().Contains(filter.ToLower()))
                     .Select(x => new OutputProduct
@@ -42,6 +58,17 @@ namespace APINET_T26.Controllers
         #endregion
 
         #region GET: api/products/{categoryId}/{id}
+        /// <summary>
+        /// Lấy danh sách sản phẩm. Roles: Admin, User
+        /// </summary>
+        /// <remarks>
+        /// Sử dụng Api với các tham số: IsActive, Filter, ...
+        /// </remarks>
+        /// <param name="filter"></param>
+        /// <response code="200">Trả về danh sách sản phẩm</response>
+        /// <response code="400">Thiếu thông tin</response>
+        /// <response code="404">Không tim thấy thông tin</response>
+        /// <response code="500">Lỗi hệ thống</response>
         [HttpGet("/{categoryId}/{id}")]
         public IActionResult GetProduct(Guid categoryId, Guid id)
         {
@@ -62,6 +89,17 @@ namespace APINET_T26.Controllers
         #endregion
 
         #region POST: api/products
+        /// <summary>
+        /// Lấy danh sách sản phẩm. Roles: Admin, User
+        /// </summary>
+        /// <remarks>
+        /// Sử dụng Api với các tham số: IsActive, Filter, ...
+        /// </remarks>
+        /// <param name="filter"></param>
+        /// <response code="200">Trả về danh sách sản phẩm</response>
+        /// <response code="400">Thiếu thông tin</response>
+        /// <response code="404">Không tim thấy thông tin</response>
+        /// <response code="500">Lỗi hệ thống</response>
         [HttpPost]
         public IActionResult AddProduct(InputProduct input)
         {
@@ -87,6 +125,17 @@ namespace APINET_T26.Controllers
         #endregion
 
         #region PUT: api/products/{id}
+        /// <summary>
+        /// Lấy danh sách sản phẩm. Roles: Admin, User
+        /// </summary>
+        /// <remarks>
+        /// Sử dụng Api với các tham số: IsActive, Filter, ...
+        /// </remarks>
+        /// <param name="filter"></param>
+        /// <response code="200">Trả về danh sách sản phẩm</response>
+        /// <response code="400">Thiếu thông tin</response>
+        /// <response code="404">Không tim thấy thông tin</response>
+        /// <response code="500">Lỗi hệ thống</response>
         [HttpPut("{id}")]
         public IActionResult UpdateProduct(Guid id, UpdateProduct input)
         {
@@ -110,6 +159,17 @@ namespace APINET_T26.Controllers
         #endregion
 
         #region DELETE: api/products/{id}
+        /// <summary>
+        /// Lấy danh sách sản phẩm. Roles: Admin, User
+        /// </summary>
+        /// <remarks>
+        /// Sử dụng Api với các tham số: IsActive, Filter, ...
+        /// </remarks>
+        /// <param name="filter"></param>
+        /// <response code="200">Trả về danh sách sản phẩm</response>
+        /// <response code="400">Thiếu thông tin</response>
+        /// <response code="404">Không tim thấy thông tin</response>
+        /// <response code="500">Lỗi hệ thống</response>
         [HttpDelete("{id}")]
         public IActionResult DeleteProduct(Guid id) {
             try
