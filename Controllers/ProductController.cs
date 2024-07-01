@@ -1,5 +1,6 @@
 ﻿using APINET_T26.Models.Entities;
 using APINET_T26.Models.Product;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace APINET_T26.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Tags("Product - Sản phẩm phiên bản 1.0")]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         #region Constructor
