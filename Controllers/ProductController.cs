@@ -1,8 +1,10 @@
-﻿using APINET_T26.Models.Entities;
+﻿using APINET_T26.Models;
+using APINET_T26.Models.Entities;
 using APINET_T26.Models.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace APINET_T26.Controllers
 {
@@ -11,14 +13,23 @@ namespace APINET_T26.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Tags("Product - Sản phẩm phiên bản 1.0")]
-    [Authorize]
+    //[Authorize]
     public class ProductController : ControllerBase
     {
         #region Constructor
         private readonly APINETT26DbContext _context;
-        public ProductController(APINETT26DbContext context)
+        private readonly IMemoryCache _cache;
+        private readonly MemoryCacheEntryOptions _cacheOptions;
+        private static string cacheGetProductsKey = "ProductController";
+        private readonly ILogger<ProductController> _logger;
+        public ProductController(APINETT26DbContext context, 
+            IMemoryCache memory,
+            ILogger<ProductController> logger)
         {
             _context = context;
+            _cache = memory;
+            _cacheOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(60));
+            _logger = logger;
         }
         #endregion
 
@@ -35,13 +46,13 @@ namespace APINET_T26.Controllers
         /// <response code="404">Không tim thấy thông tin</response>
         /// <response code="500">Lỗi hệ thống</response>
         [HttpGet]
-        public IActionResult GetProductList(string filter = "")
+        public ResponseDefault<List<OutputProduct>> GetProductList(string filter = "")
         {
-            try
+            if (!_cache.TryGetValue(cacheGetProductsKey, out ResponseDefault<List<OutputProduct>> cacheResult))
             {
-                //mô tả
                 var items = _context.Products
                     .Where(x => x.Filter.ToLower().Contains(filter.ToLower()))
+                    .OrderBy(x => x.Name)
                     .Select(x => new OutputProduct
                     {
                         Id = x.Id,
@@ -49,13 +60,43 @@ namespace APINET_T26.Controllers
                         Price = x.Price,
                         Description = x.Description
                     })
+                    //.Skip(0).Take(10) //Phân trang dữ liệu
                     .ToList();
-                return StatusCode(StatusCodes.Status200OK, items);
+
+                var response = new ResponseDefault<List<OutputProduct>>
+                {
+                    Items = items,
+                    Filter = filter
+                };
+
+                _cache.Set(cacheGetProductsKey, response, _cacheOptions);
+                _logger.LogInformation("Get data from SQL SERVER: GetProducts");
+                return response;
             }
-            catch (Exception e)
+            else
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, e.ToString());
+                _logger.LogWarning("Get data from CACHE: GetProducts");
+                return cacheResult;
             }
+            //try
+            //{
+            //    //mô tả
+            //    var items = _context.Products
+            //        .Where(x => x.Filter.ToLower().Contains(filter.ToLower()))
+            //        .Select(x => new OutputProduct
+            //        {
+            //            Id = x.Id,
+            //            Name = x.Name,
+            //            Price = x.Price,
+            //            Description = x.Description
+            //        })
+            //        .ToList();
+            //    return StatusCode(StatusCodes.Status200OK, items);
+            //}
+            //catch (Exception e)
+            //{
+            //    return StatusCode(StatusCodes.Status500InternalServerError, e.ToString());
+            //}
         }
         #endregion
 

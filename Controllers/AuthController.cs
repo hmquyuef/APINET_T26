@@ -1,7 +1,5 @@
 ﻿using APINET_T26.Data;
 using APINET_T26.Models.Authen;
-using APINET_T26.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
